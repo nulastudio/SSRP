@@ -1,0 +1,18 @@
+{
+    "name": "nulastudio/ssrp",
+    "description": "ShadowsocksR Protocol(SSRP)",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "LiesAuer",
+            "email": "liesauer@liesauer.net"
+        }
+    ],
+    "require": {},
+    "autoload": {
+        "psr-4": {
+            "nulastudio\\SSR\\": "src/"
+        }
+    }
+}
