@@ -6,10 +6,11 @@ use nulastudio\SSR\SS;
 use nulastudio\SSR\SSR;
 use nulastudio\SSR\Util;
 
-class SSRSubscribe
+class SSRSubscribe implements \Countable, \Iterator, \ArrayAccess
 {
-    protected $SSRs = [];
-    public $name    = 'empty subscribe';
+    private $position = 0;
+    protected $SSRs   = [];
+    public $name      = 'empty subscribe';
 
     public function __construct($name = null, $ssr = null)
     {
@@ -29,7 +30,7 @@ class SSRSubscribe
         if ($ssr instanceof SSR) {
             $this->SSRs[] = $ssr;
         } else if ($ssr instanceof SS) {
-            $this->SSRs[] = SSR::parseFromSS(SS);
+            $this->SSRs[] = SSR::parseFromSS($ssr);
         } else if (is_string($ssr)) {
             if (substr($ssr, 0, 5) === 'ss://') {
                 $this->addSSR(SS::parseFromLink($ssr));
@@ -44,9 +45,14 @@ class SSRSubscribe
         $ssrLinks  = Util::urlSafeBase64Decode($pack);
         $subscribe = new static('empty subscribe');
 
-        $ssrLinkArr = explode("\r\n", $ssrLinks);
+        $ssrLinks = str_replace(["\r", "\r\n"], "\n", $ssrLinks);
+
+        $ssrLinkArr = explode("\n", $ssrLinks);
 
         for ($i = 0; $i < count($ssrLinkArr); $i++) {
+            if (empty($ssrLinkArr[$i])) {
+                continue;
+            }
             $ssr = SSR::parseFromLink($ssrLinkArr[$i]);
             $subscribe->addSSR($ssr);
             if ($i === 1) {
@@ -64,5 +70,52 @@ class SSRSubscribe
             $ssr->group = $group;
             return (string) $ssr;
         }, $this->SSRs)));
+    }
+
+    public function count()
+    {
+        return count($this->SSRs);
+    }
+
+    public function current()
+    {
+        return $this->SSRs[$this->position];
+    }
+    public function key()
+    {
+        return $this->position;
+    }
+    public function next()
+    {
+        ++$this->position;
+    }
+    public function rewind()
+    {
+        $this->position = 0;
+    }
+    public function valid()
+    {
+        return isset($this->SSRs[$this->position]);
+    }
+
+    public function offsetExists($offset)
+    {
+        return isset($this->SSRs[$offset]);
+    }
+    public function offsetGet($offset)
+    {
+        return isset($this->SSRs[$offset]) ? $this->SSRs[$offset] : null;
+    }
+    public function offsetSet($offset, $value)
+    {
+        if (is_null($offset)) {
+            $this->SSRs[] = $value;
+        } else {
+            $this->SSRs[$offset] = $value;
+        }
+    }
+    public function offsetUnset($offset)
+    {
+        unset($this->SSRs[$offset]);
     }
 }
