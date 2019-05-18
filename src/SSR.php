@@ -58,8 +58,12 @@ class SSR
             'password' => Util::urlSafeBase64Decode($base64pass),
         );
         foreach (explode('&', $params) as $kv) {
-            list($key, $value) = explode('=', $kv);
-            $arr[$key]         = Util::urlSafeBase64Decode($value);
+            // 兼容非urlsafe base64
+            $segments = explode('=', $kv);
+            $key      = array_shift($segments);
+            $value    = implode('=', $segments);
+            // list($key, $value) = explode('=', $kv);
+            $arr[$key] = Util::urlSafeBase64Decode($value);
         }
 
         return static::parseFromArray($arr);
@@ -84,19 +88,19 @@ class SSR
 
     public static function parseFromArray($arr)
     {
-        $ssr             = new static();
-        $ssr->host       = isset($arr['host']) ? $arr['host'] : '';
-        $ssr->port       = isset($arr['port']) ? $arr['port'] : 1080;
-        $ssr->protocol   = isset($arr['protocol']) ? $arr['protocol'] : '';
-        $ssr->method     = isset($arr['method']) ? $arr['method'] : '';
-        $ssr->obfs       = isset($arr['obfs']) ? $arr['obfs'] : '';
-        $ssr->password   = isset($arr['password']) ? $arr['password'] : '';
-        $ssr->obfsParam  = isset($arr['obfsparam']) ? $arr['obfsparam'] : '';
-        $ssr->protoParam = isset($arr['protoparam']) ? $arr['protoparam'] : '';
-        $ssr->remarks    = isset($arr['remarks']) ? $arr['remarks'] : '';
-        $ssr->group      = isset($arr['group']) ? $arr['group'] : '';
-        $ssr->udpPort    = isset($arr['udpport']) ? $arr['udpport'] : '';
-        $ssr->uot        = isset($arr['uot']) ? $arr['uot'] : '';
+        $host       = isset($arr['host']) ? $arr['host'] : '';
+        $port       = isset($arr['port']) ? $arr['port'] : 1080;
+        $protocol   = isset($arr['protocol']) ? $arr['protocol'] : '';
+        $method     = isset($arr['method']) ? $arr['method'] : '';
+        $obfs       = isset($arr['obfs']) ? $arr['obfs'] : '';
+        $password   = isset($arr['password']) ? $arr['password'] : '';
+        $obfsParam  = isset($arr['obfsparam']) ? $arr['obfsparam'] : '';
+        $protoParam = isset($arr['protoparam']) ? $arr['protoparam'] : '';
+        $remarks    = isset($arr['remarks']) ? $arr['remarks'] : '';
+        $group      = isset($arr['group']) ? $arr['group'] : '';
+        $udpPort    = isset($arr['udpport']) ? $arr['udpport'] : '';
+        $uot        = isset($arr['uot']) ? $arr['uot'] : '';
+        $ssr        = new static($host, $port, $protocol, $method, $obfs, $password, $obfsParam, $protoParam, $remarks, $group, $udpPort, $uot);
         return $ssr;
     }
 

@@ -41,11 +41,11 @@ class SS
 
     public static function parseFromArray($arr)
     {
-        $ss           = new static();
-        $ss->host     = isset($arr['host']) ? $arr['host'] : '';
-        $ss->port     = isset($arr['port']) ? (int) $arr['port'] : 1080;
-        $ss->method   = isset($arr['method']) ? $arr['method'] : 'AES-256-CFB';
-        $ss->password = isset($arr['password']) ? $arr['password'] : '';
+        $host     = isset($arr['host']) ? $arr['host'] : '';
+        $port     = isset($arr['port']) ? (int) $arr['port'] : 1080;
+        $method   = isset($arr['method']) ? $arr['method'] : 'AES-256-CFB';
+        $password = isset($arr['password']) ? $arr['password'] : '';
+        $ss       = new static($host, $port, $method, $password);
         return $ss;
     }
 
