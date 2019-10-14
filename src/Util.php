@@ -19,4 +19,8 @@ class Util
         }
         return base64_decode($base64);
     }
+    public static function ensureBase64($string)
+    {
+        return preg_replace('#[^A-Za-z0-9\+\/\=\-\_]#', '', $string);
+    }
 }

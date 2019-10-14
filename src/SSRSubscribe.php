@@ -42,22 +42,34 @@ class SSRSubscribe implements \Countable, \Iterator, \ArrayAccess
 
     public static function parseFromSubscribe($pack)
     {
+        $pack      = Util::ensureBase64($pack);
         $ssrLinks  = Util::urlSafeBase64Decode($pack);
         $subscribe = new static('empty subscribe');
 
         $ssrLinks = str_replace(["\r", "\r\n"], "\n", $ssrLinks);
 
-        $ssrLinkArr = explode("\n", $ssrLinks);
+        $ssrLinkArr = array_values(array_unique(explode("\n", $ssrLinks)));
+
+        $haveName = false;
 
         for ($i = 0; $i < count($ssrLinkArr); $i++) {
             if (empty($ssrLinkArr[$i])) {
                 continue;
             }
-            $ssr = SSR::parseFromLink($ssrLinkArr[$i]);
-            $subscribe->addSSR($ssr);
-            if ($i === 1) {
-                $subscribe->name = $ssr->group;
+            $ssr = $ssrLinkArr[$i];
+            if (substr($ssr, 0, 5) === 'ss://') {
+                $subscribe->addSSR(SS::parseFromLink($ssr));
+            } else if (substr($ssr, 0, 6) === 'ssr://') {
+                $subscribe->addSSR(SSR::parseFromLink($ssr));
+                if (!$haveName) {
+                    $subscribe->name = $ssr->group;
+                    $haveName = true;
+                }
             }
+        }
+
+        if (empty(trim($subscribe->name))) {
+            $subscribe->name = 'unname';
         }
 
         return $subscribe;
