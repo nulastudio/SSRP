@@ -4,6 +4,15 @@ namespace nulastudio\SSR;
 
 use nulastudio\SSR\Util;
 
+/**
+ * SS协议解析
+ *
+ * plain URI: ss://method:password@hostname:port
+ * SIP002 URI: "ss://" userinfo "@" hostname ":" port [ "/" ] [ "?" plugin ] [ "#" tag ]
+ * userinfo = websafe-base64-encode-utf8(method  ":" password)
+ *
+ * @see https://shadowsocks.org/en/spec/SIP002-URI-Scheme.html
+ */
 class SS
 {
     public $host;     // 服务器

@@ -46,7 +46,7 @@ class SSRSubscribe implements \Countable, \Iterator, \ArrayAccess
         $ssrLinks  = Util::urlSafeBase64Decode($pack);
         $subscribe = new static('empty subscribe');
 
-        $ssrLinks = str_replace(["\r", "\r\n"], "\n", $ssrLinks);
+        $ssrLinks = str_replace(["\r\n", "\r"], "\n", $ssrLinks);
 
         $ssrLinkArr = array_values(array_unique(explode("\n", $ssrLinks)));
 
@@ -60,8 +60,9 @@ class SSRSubscribe implements \Countable, \Iterator, \ArrayAccess
             if (substr($ssr, 0, 5) === 'ss://') {
                 $subscribe->addSSR(SS::parseFromLink($ssr));
             } else if (substr($ssr, 0, 6) === 'ssr://') {
-                $subscribe->addSSR(SSR::parseFromLink($ssr));
-                if (!$haveName) {
+                $ssr = SSR::parseFromLink($ssr);
+                $subscribe->addSSR($ssr);
+                if (!$haveName && !empty($ssr->group)) {
                     $subscribe->name = $ssr->group;
                     $haveName = true;
                 }
