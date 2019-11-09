@@ -44,7 +44,13 @@ class SSR
         $info                = Util::urlSafeBase64Decode(substr($link, 6));
         list($info, $params) = explode('/?', $info);
 
-        list($host, $port, $protocol, $method, $obfs, $base64pass) = explode(':', $info);
+        $mainInfo   = explode(':', $info);
+        $base64pass = array_pop($mainInfo);
+        $obfs       = array_pop($mainInfo);
+        $method     = array_pop($mainInfo);
+        $protocol   = array_pop($mainInfo);
+        $port       = array_pop($mainInfo);
+        $host       = implode(':', $mainInfo);
 
         $protocol = str_replace('_compatible', '', $protocol);
         $obfs     = str_replace('_compatible', '', $obfs);

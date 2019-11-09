@@ -36,7 +36,9 @@ class SS
         $info                    = Util::urlSafeBase64Decode(substr($link, 5));
         list($auth, $server)     = explode('@', $info);
         list($method, $password) = explode(':', $auth);
-        list($host, $port)       = explode(':', $server);
+        $server                  = explode(':', $server);
+        $port                    = array_pop($server);
+        $host                    = implode(':', $server);
 
         $arr = array(
             'host'     => $host,
